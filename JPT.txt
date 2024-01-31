@@ -1,0 +1,252 @@
+DAY-1
+
+1. Intoduction
+	History of Java
+		WORA
+	Versions
+		LTS
+	JDK, JRE, JVM
+	Compiler and Interpreter
+	Bytecde
+2. JVM Architecture
+	Class Loader
+		Loader
+			Bootstrap Class Loader
+				jre/lib: java.lang, java.net, java.util, java.io, etc
+			Extension Class Loader
+				jre/lib/ext
+			Application Class Loader
+				classpath
+		Linker
+			Verify
+				classfile-jre compatibility
+			Prepare
+				memory allocation and default initialization for statics
+			Resolve
+				direct references 
+		Initializer
+			Initialize
+				constructor
+				static block
+				static values
+	Runtime Data Area
+		Method Area
+			field data
+			method data
+			code
+				outofmemoryerror
+		Heap
+			objects
+		Stack
+			thread call stackframe
+				locals
+				operands
+		PC
+			thread register
+		Native Method Stack
+			thread native stack
+	Execution Engine
+		Interpreter
+			loops
+			methods
+			platform independence
+		JIT Compiler
+			Code optimizer
+			Target Code Generator
+			Profiler
+		Garbage Collector
+			Mark and Sweep
+				Serial
+					Single CPU
+				Parellal/Throughput
+					Multiple Threads
+				CMS
+				G1/Garbage First
+					Large Heap 4GB
+	JNI
+	Native Library
+3. Break
+4. JIT Compilation
+	Hotspot Compilation
+	C1/C2 Compilers
+	CodeCache
+		IntialCodeCacheSize: 2MB
+		ReservedCodeCacheSize: 240MB
+			NonMethodCodeHeapSize 5.5MB
+			ProfileCodeHeapSize: 117.2MB
+			NonProfileCodeHeapSize: 117.2MB
+	Inlining
+		Getter/Setter
+	Escape Analysis
+		Skipping synchronization
+5. Garbage Collection
+	SingleHeap
+		Allocate
+		Free
+		Compact
+	Stop-The-World/gc-pause
+	Genereational Collectors
+		Principle
+		Young: Minor GC
+			Eden
+			Surviver
+		Old/Tenuered: Full GC
+		Permgen/Metaspace
+	Collection Algorithms
+		Mark and Sweep
+			Single - Dockers
+			Parellal - JDK8 Default
+			CMS - Deprecated
+			G1 - JDK 11 Default
+				Principle
+					Descrete 2048 Regions
+						Eden, Surviver, Old and Humongous
+					Clear Most Garbaged Old Generation Regions
+					No Stop-The-World
+					Frequent & small collections
+				Operations
+					Young Collection
+						When Eden filled
+						Stop-the-world
+						Moves to S/O
+					Concurrent Mark Cycle
+						Mark Most Garbaged Old, in background
+						At least one young collection
+					Iterative Mixed Collections
+						Young collection
+						Collect some marked Old regions
+					Optional FullGC
+
+DAY-2
+6. VisualVM
+	Installing and starting
+	Connecting to JVM
+	JMX and Remote applications
+	Exploring Monitor
+		CPU
+		Heap
+		Threads
+		Classes
+	Profiling Vs Sampling
+		CPU
+		Memory
+		Settings
+		GC
+		Dumps
+		hprof
+7. VisualVM Handson
+	Write a small program to create 10K user objects and keep in array
+	Run in debug mode to profile
+	Observe VisualVM
+8.Thread Management
+	Threads
+		OS Resources
+		Throughput and Thrashing
+		I/O intensive operations
+		Multi-core Processors
+	Concurrency
+		Thread safety
+			Data structures
+		Synchronization
+			Block-level
+			Object-level
+			Performance cost
+		Sharing thread-unsafe object		
+			Thread Locals
+	Performance
+		Thread Pools
+			Executor Framework
+	Virtual Threads
+		Platform Threads
+		JVM/virtual Threads
+		Carrier
+		Thread Affinity
+		Synchronization and Pinning
+		Performance cost
+		JDK 21
+9. Break
+10. Memory Efficient Programming
+	Object Pool
+		Client
+		abs ObjectPool
+			pvt array available, locked
+			static getInstance(): ObjectPool
+			sync acquire(): T
+				destory if expired or invalid
+				return if available or create 
+			sync release(T): void
+			abs create(): T
+			abs validate(T): boolean
+			abs destory(T): void
+		JDBC Connection Pool
+		Hands-on Code
+	Week References
+	Soft References
+	Strings
+		Compact Strings
+		Concatanation
+		Deduplication
+	Method calls in loops
+	Exceptions
+		Stack Trace
+	Logging
+DAY-3
+11. Configuration
+	Syntax
+		1500+ options
+		standard: -classpath
+		non-standard: -X
+		experimental: -XX 
+			product: popular options 
+			experimental: -XX:+UnlockExperimentalVMOptions -XX:+UseZGC
+			manageabile: JMX compatible 
+			diagnostic: -XX:+UnlockDiagnosticVMOptions -XX:+LogCompilation
+			ergonomic: calculated
+			default: pre-defined 
+			developmental: only for debug build
+		java -XX:+PrintFlagsFinal
+		popularity: https://jacoline.dev/stats
+		jvm overridings: jps -v
+	JIT Configuration
+		JIT Logs: XX:+PrintCompilation
+		Compiler count
+		Compiler invocation
+		OSR 
+		Deoptimization
+		CodeCache
+	JVM Configuration
+	GC Configuration
+	Hands-on: Collect the parameters
+12. Break
+13. Dump Analysis
+	Thread Dumps 
+		jps 
+		jstack -l <pid> 
+		jcmd <pid> Thread.print > dump.txt 
+		structure
+		thread states: new, runnable, blocked, waiting, timed-waiting, terminated
+		Tips: 
+			Focus on RUNNABLE and BLOCKED
+			High CPU usage issues: RUNNABLE 
+			Low Performance: BLOCKED 
+			Multiple dumps at 10 second intervals 
+		online: https://fastthread.io/
+		standalone tools 
+	Heap Dumps 
+		jps 
+		jmap -dump <pid> <path>
+		jcmd <pid>> GC.heap_dump <path>
+		automatic: -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=<path>heap.hprof
+		OutOfMemoryError
+			memory leak
+			finalizers
+			heapsize plaster 
+		https://heaphero.io/
+14. Hands-on
+15. Best Practices
+	I/O Operations
+		Network 
+		File 
+		Async 
+		Non-blocking IO
+	DB Operations
